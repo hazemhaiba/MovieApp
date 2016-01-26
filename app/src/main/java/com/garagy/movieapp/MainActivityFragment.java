@@ -1,11 +1,13 @@
 package com.garagy.movieapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.garagy.movieapp.adapter.ImageAdapter;
@@ -118,8 +120,8 @@ public class MainActivityFragment extends Fragment {
                                 @Override
                                 public void run() {
                                     GsonBuilder builder = new GsonBuilder();
-                                    Gson gson = builder.create();
-                                    Page newpage = gson.fromJson(finalMovieJSON, Page.class);
+                                    final Gson gson = builder.create();
+                                    final Page newpage = gson.fromJson(finalMovieJSON, Page.class);
 //                            ImageView imageView= (ImageView) getActivity().findViewById(R.id.imageView);
 //                            Picasso.with(getContext()).load("http://image.tmdb.org/t/p/w185/"+newpage.getResults().get(1).getPoster_path()).into(imageView);
 //                            Log.e("picture loaded", "picture loaded-");
@@ -132,6 +134,19 @@ public class MainActivityFragment extends Fragment {
                                     }
                                     ImageAdapter imageViewArrayAdapter = new ImageAdapter(getContext(), urls);
                                     gridView.setAdapter(imageViewArrayAdapter);
+                                    gridView.setClickable(true);
+                                    gridView.refreshDrawableState();
+                                    gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                        @Override
+                                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                            Intent intent = new Intent(getActivity(), MovieDetailActivity.class);
+                                            String jsonextra = gson.toJson(newpage.getResults().get(position));
+                                            // Toast.makeText(getActivity(),jsonextra,Toast.LENGTH_LONG).show();
+                                            intent.putExtra("movie", jsonextra);
+//                                            intent.putExtra("hello","hello");
+                                            startActivity(intent);
+                                        }
+                                    });
 
                                 }
                             });
