@@ -239,9 +239,9 @@ public class MainActivityFragment extends Fragment {
             case 1:
                 url = url + Important_Strings.Movie_High_rated;
                 break;
-            case 2:
-                Intent intent = new Intent(getActivity(), FavouriteActivity.class);
-                startActivity(intent);
+            default:
+                url = url + Important_Strings.Movie_popular;
+                break;
 
         }
         Log.e("Url:", url);

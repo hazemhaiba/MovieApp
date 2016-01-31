@@ -41,12 +41,12 @@ public class MovieDetailActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         final Intent intent = getIntent();
-        String json = intent.getStringExtra("movie");
+        final String json = intent.getStringExtra("movie");
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
         movie = gson.fromJson(json, Result.class);
         getdata();
-        TextView movie_name_textview = (TextView) findViewById(R.id.moviename_textbox);// title
+        final TextView movie_name_textview = (TextView) findViewById(R.id.moviename_textbox);// title
         movie_name_textview.setText(movie.getTitle());
 
         ImageView imageView = (ImageView) findViewById(R.id.backdrop_imageview);
@@ -84,6 +84,7 @@ public class MovieDetailActivity extends AppCompatActivity {
                     if (sharedPref.getString("favourite", "").contains("" + movie.getId())) {
                         String new_fav = sharedPref.getString("favourite", "").replace(fav_temp, "");
                         editor.putString("favourite", new_fav);
+                        editor.remove("" + movie.getId());
                     }
                     isFavoutite = false;
                     imageButton.setImageResource(android.support.design.R.drawable.abc_btn_rating_star_off_mtrl_alpha);
@@ -92,6 +93,7 @@ public class MovieDetailActivity extends AppCompatActivity {
                     String new_fav = sharedPref.getString("favourite", "").concat(fav_temp);
                     editor.putString("favourite", new_fav);
                     isFavoutite = true;
+                    editor.putString("" + movie.getId(), json);
                     imageButton.setImageResource(android.support.design.R.drawable.abc_btn_rating_star_on_mtrl_alpha);
 
                 }
