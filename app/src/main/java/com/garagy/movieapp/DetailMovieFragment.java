@@ -4,12 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -28,54 +27,60 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class MovieDetailActivity extends AppCompatActivity {
+/**
+ * A placeholder fragment containing a simple view.
+ */
+public class DetailMovieFragment extends Fragment {
+
     Result movie;
     String Trailers;
     String Reviews;
     boolean isFavoutite;
 
+    public DetailMovieFragment() {
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_movie_detail);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        final Intent intent = getIntent();
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_detail_movie, container, false);
+        final Intent intent = getActivity().getIntent();
         final String json = intent.getStringExtra("movie");
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
         movie = gson.fromJson(json, Result.class);
         getdata();
-        final TextView movie_name_textview = (TextView) findViewById(R.id.moviename_textbox);// title
+        final TextView movie_name_textview = (TextView) view.findViewById(R.id.moviename_textbox);// title
         movie_name_textview.setText(movie.getTitle());
 
-        ImageView imageView = (ImageView) findViewById(R.id.backdrop_imageview);
-        Picasso.with(getApplicationContext()).load("http://image.tmdb.org/t/p/w500/" + movie.getBackdrop_path()).into(imageView);
+        ImageView imageView = (ImageView) view.findViewById(R.id.backdrop_imageview);
+        Picasso.with(getActivity().getApplicationContext()).load("http://image.tmdb.org/t/p/w500/" + movie.getBackdrop_path()).into(imageView);
 
-        TextView overview_textview = (TextView) findViewById(R.id.overview_tv);
+        TextView overview_textview = (TextView) view.findViewById(R.id.overview_tv);
         overview_textview.setText(movie.getOverview());
 
-        RatingBar ratingBar = (RatingBar) findViewById(R.id.ratingBar);
+        RatingBar ratingBar = (RatingBar) view.findViewById(R.id.ratingBar);
         ratingBar.setRating((float) movie.getVote_average());
 
-        TextView release_date = (TextView) findViewById(R.id.release_date_tv);
+        TextView release_date = (TextView) view.findViewById(R.id.release_date_tv);
         release_date.setText(getString(R.string.Release_date) + movie.getRelease_date());
 
-        Button trailButton = (Button) findViewById(R.id.trailer_and_review_btn);
+        Button trailButton = (Button) view.findViewById(R.id.trailer_and_review_btn);
         trailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent1 = new Intent(MovieDetailActivity.this, Trailer_and_Review.class);
+                Intent intent1 = new Intent(getActivity(), Trailer_and_Review.class);
                 intent1.putExtra("trailer", Trailers);
                 intent1.putExtra("reviews", Reviews);
                 startActivity(intent1);
             }
         });
 
-        final SharedPreferences sharedPref = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        final SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = sharedPref.edit();
         String favouties_String = sharedPref.getString("favourite", "");
-        final ImageButton imageButton = (ImageButton) findViewById(R.id.action_favourite);
+        final ImageButton imageButton = (ImageButton) view.findViewById(R.id.action_favourite);
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -111,11 +116,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         }
 
 
-
-
-
-
-
+        return view;
     }
 
     public String getdata() {
@@ -205,23 +206,5 @@ public class MovieDetailActivity extends AppCompatActivity {
         }
 
 
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_movie_detail, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                Intent intent = new Intent(MovieDetailActivity.this, SettingsActivity.class);
-                startActivity(intent);
-                return true;
-
-        }
-        return super.onOptionsItemSelected(item);
     }
 }

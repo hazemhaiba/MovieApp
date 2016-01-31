@@ -160,7 +160,7 @@ public class MainActivityFragment extends Fragment {
                                     gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                         @Override
                                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                            Intent intent = new Intent(getActivity(), MovieDetailActivity.class);
+                                            Intent intent = new Intent(getActivity(), DetailMovie.class);
                                             String jsonextra = gson.toJson(newpage.getResults().get(position));
                                             // Toast.makeText(getActivity(),jsonextra,Toast.LENGTH_LONG).show();
                                             intent.putExtra("movie", jsonextra);

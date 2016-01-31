@@ -48,7 +48,7 @@ public class FavouriteActivityFragment extends Fragment {
             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Intent intent = new Intent(getActivity(), MovieDetailActivity.class);
+                    Intent intent = new Intent(getActivity(), DetailMovie.class);
                     String json = sharedPref.getString(temp[position], "");
                     if (!json.equals("")) {
                         intent.putExtra("movie", json);
