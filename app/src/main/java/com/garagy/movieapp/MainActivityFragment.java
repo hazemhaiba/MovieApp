@@ -1,10 +1,14 @@
 package com.garagy.movieapp;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -26,6 +30,7 @@ import java.net.URL;
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends Fragment {
+    int page = 1;
     public MainActivityFragment() {
     }
 
@@ -33,6 +38,8 @@ public class MainActivityFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         super.setHasOptionsMenu(true);
+        Log.e("App Created", "App Created");
+
     }
 
     @Override
@@ -40,9 +47,25 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View fragment = inflater.inflate(R.layout.fragment_main, container, false);
-        getdata(1);
+        getdata(page);
 //        Picasso
         //hazem
+        FloatingActionButton fab_next = (FloatingActionButton) fragment.findViewById(R.id.fab_next);
+        fab_next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getdata(page++);
+            }
+        });
+        FloatingActionButton fab_prev = (FloatingActionButton) fragment.findViewById(R.id.fab_previous);
+        fab_prev.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (page - 1 > 0) {
+                    getdata(page--);
+                }
+            }
+        });
 
 
         return fragment;
@@ -63,9 +86,8 @@ public class MainActivityFragment extends Fragment {
                 String movieJSON = null;
 
                 try {
-                    // Construct the URL for the OpenWeatherMap query
-                    String Url_string = Important_Strings.Base_url + Important_Strings.Movie_popular + "?api_key=" + Important_Strings.App_key + "&page=" + page;
-                    URL url = new URL(Url_string);
+
+                    URL url = new URL(getUrl());
 
                     // Create the request to OpenWeatherMap, and open the connection
                     urlConnection = (HttpURLConnection) url.openConnection();
@@ -135,7 +157,6 @@ public class MainActivityFragment extends Fragment {
                                     ImageAdapter imageViewArrayAdapter = new ImageAdapter(getContext(), urls);
                                     gridView.setAdapter(imageViewArrayAdapter);
                                     gridView.setClickable(true);
-                                    gridView.refreshDrawableState();
                                     gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                         @Override
                                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -147,6 +168,7 @@ public class MainActivityFragment extends Fragment {
                                             startActivity(intent);
                                         }
                                     });
+                                    gridView.forceLayout();
 
                                 }
                             });
@@ -166,5 +188,63 @@ public class MainActivityFragment extends Fragment {
 
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_refresh) {
+            getdata(page);
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
+    @Override
+    public void onPause() {
+        Log.e("App Paused", "App Paused");
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        Log.e("App Resume", "App Resume");
+        super.onResume();
+        getdata(page);
+    }
+
+    @Override
+    public void onStop() {
+        Log.e("App Stopped", "App Stopped");
+        super.onStop();
+    }
+
+    @Override
+    public void onStart() {
+        Log.e("App Started", "App Started");
+        super.onStart();
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.e("App Destroyed", "App Destroyed");
+        super.onDestroy();
+    }
+
+    public String getUrl() {
+        SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        Log.e("Shared Pref in Fragment", "" + sharedPref.getInt(getString(R.string.saved_mode), -1));
+        int mode = sharedPref.getInt(getString(R.string.saved_mode), 0);
+        String url = Important_Strings.Base_url;
+        switch (mode) {
+            case 0:
+                url = url + Important_Strings.Movie_popular;
+                break;
+            case 1:
+                url = url + Important_Strings.Movie_High_rated;
+                break;
+            case 2:
+                Intent intent = new Intent(getActivity(), FavouriteActivity.class);
+                startActivity(intent);
+
+        }
+        Log.e("Url:", url);
+        return url + "?api_key=" + Important_Strings.App_key + "&page=" + page;
+    }
 }

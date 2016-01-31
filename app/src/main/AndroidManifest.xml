@@ -30,6 +30,24 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.garagy.movieapp.MainActivity" />
         </activity>
+        <activity
+            android:name=".Trailer_and_Review"
+            android:label="@string/title_activity_trailer_and__review"
+            android:parentActivityName=".MovieDetailActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.garagy.movieapp.MovieDetailActivity" />
+        </activity>
+        <activity
+            android:name=".FavouriteActivity"
+            android:label="@string/title_activity_favourite"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.garagy.movieapp.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
