@@ -26,11 +26,14 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import javax.security.auth.callback.Callback;
+
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment {
+public class MainActivityFragment extends Fragment implements Callback {
     int page = 1;
+    boolean mTwopane;
     public MainActivityFragment() {
     }
 
@@ -38,6 +41,7 @@ public class MainActivityFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         super.setHasOptionsMenu(true);
+
         Log.e("App Created", "App Created");
 
     }
@@ -160,12 +164,30 @@ public class MainActivityFragment extends Fragment {
                                     gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                         @Override
                                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                            Intent intent = new Intent(getActivity(), DetailMovie.class);
                                             String jsonextra = gson.toJson(newpage.getResults().get(position));
-                                            // Toast.makeText(getActivity(),jsonextra,Toast.LENGTH_LONG).show();
-                                            intent.putExtra("movie", jsonextra);
+                                            mTwopane = MainActivity.mTwopane;
+                                            if (mTwopane) {
+                                                Bundle arguments = new Bundle();
+                                                arguments.putString("movie", jsonextra);
+                                                DetailMovieFragment fragment = new DetailMovieFragment();
+                                                fragment.setArguments(arguments);
+                                                final SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+                                                final SharedPreferences.Editor editor = sharedPref.edit();
+                                                editor.putString("movie", jsonextra);
+                                                editor.commit();
+
+                                                getActivity().getSupportFragmentManager().beginTransaction()
+                                                        .replace(R.id.MovieDetailContainer, fragment)
+                                                        .commit();
+
+                                            } else {
+                                                Intent intent = new Intent(getActivity(), DetailMovie.class);
+                                                // Toast.makeText(getActivity(),jsonextra,Toast.LENGTH_LONG).show();
+                                                intent.putExtra("movie", jsonextra);
 //                                            intent.putExtra("hello","hello");
-                                            startActivity(intent);
+                                                startActivity(intent);
+
+                                            }
                                         }
                                     });
                                     gridView.forceLayout();

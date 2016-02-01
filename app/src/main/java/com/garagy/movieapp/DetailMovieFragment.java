@@ -46,7 +46,19 @@ public class DetailMovieFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_detail_movie, container, false);
         final Intent intent = getActivity().getIntent();
-        final String json = intent.getStringExtra("movie");
+        final String json;
+        if (intent.hasExtra("movie")) {
+            json = intent.getStringExtra("movie");
+        } else {
+            final SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+            final SharedPreferences.Editor editor = sharedPref.edit();
+            json = sharedPref.getString("movie", "");
+
+        }
+        if (json.equals("")) {
+            return view;
+        }
+
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
         movie = gson.fromJson(json, Result.class);
